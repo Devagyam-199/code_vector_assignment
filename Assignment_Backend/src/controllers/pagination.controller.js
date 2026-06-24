@@ -17,7 +17,7 @@ const paginationController = async (req, res) => {
   //   }
 
   const { category, cursor, limit } = req.query;
-  let lim = parseInt(limit) || 20;
+  let lim = Math.min(parseInt(limit) || 20, 10000);;
   const conditions = [];
   const params = [];
   let p = 1;

@@ -1,5 +1,17 @@
 import { faker } from "@faker-js/faker";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
 import pool from "../database/dbConn.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const ensureSchema = async () => {
+  const schemaPath = path.join(__dirname, "../database/schema.sql");
+  const schemaSql = fs.readFileSync(schemaPath, "utf-8");
+  await pool.query(schemaSql);
+  console.log("Schema ensured (table + indexes ready)");
+};
 
 const seedBatch = async (batchSize) => {
   let valueSql = [];
@@ -17,14 +29,14 @@ const seedBatch = async (batchSize) => {
   }
 
   await pool.query(
-    `INSERT INTO PRODUCTS (name,category,price,created_at,updated_at) VALUES ${valueSql.join(",")}`,
+    `INSERT INTO products (name, category, price, created_at, updated_at) VALUES ${valueSql.join(",")}`,
     params,
   );
 };
 
-const seedAll = async () => {
-  const total = 200000;
-  const batchSize = 10000;
+const seedAll = async (total = 200000, batchSize = 10000) => {
+  await ensureSchema();
+
   for (let i = 0; i < total; i += batchSize) {
     const start = Date.now();
     await seedBatch(batchSize);

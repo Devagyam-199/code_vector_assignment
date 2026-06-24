@@ -13,7 +13,7 @@ const decodeParams = (cursor) => {
       return { createdAt, id };
     }
   } catch (error) {
-    return error;
+    return null;
   }
 };
 
